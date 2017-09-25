@@ -2,11 +2,13 @@ package com.dharmesh.nytimes.activities;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import com.dharmesh.nytimes.R;
 import com.dharmesh.nytimes.adapters.ArticleAdapter;
 import com.dharmesh.nytimes.fragments.DatePickerFragment;
+import com.dharmesh.nytimes.listeners.EndlessRecyclerViewScrollListener;
 import com.dharmesh.nytimes.models.Article;
 import com.dharmesh.nytimes.models.ArticleSearchResponse;
 import com.dharmesh.nytimes.models.SearchRequest;
@@ -43,19 +46,34 @@ public class IndexActivity extends AppCompatActivity {
     private ArticleAdapter articleAdapter;
     private static final DateFormat DF = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
     private SearchRequest request;
+    private RecyclerView rvArticles;
+    private StaggeredGridLayoutManager layoutManager;
+    private EndlessRecyclerViewScrollListener scrollListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_index);
-        RecyclerView rvArticles = findViewById(R.id.rvArticles);
-        StaggeredGridLayoutManager mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        rvArticles.setLayoutManager(mLayoutManager);
+        request = new SearchRequest();
+        rvArticles = findViewById(R.id.rvArticles);
+        initRecyclerView();
+    }
+
+    private void initRecyclerView(){
+        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        rvArticles.setLayoutManager(layoutManager);
         articleAdapter = new ArticleAdapter(this);
         rvArticles.setAdapter(articleAdapter);
-        request = new SearchRequest();
-
+        scrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                request.setPage(page);
+                searchArticles(request);
+            }
+        };
+        rvArticles.addOnScrollListener(scrollListener);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -66,8 +84,17 @@ public class IndexActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                if (!isNetworkAvailable()) {
+                    Pop.on(IndexActivity.this)
+                            .body(R.string.network_not_available)
+                            .when((Pop.Yah) (dialog, view) -> dialog.dismiss())
+                            .show();
+                    return false;
+                }
+                resetArticleList();
                 request.setQuery(query);
                 searchArticles(request);
+                searchView.clearFocus();
                 return true;
             }
 
@@ -81,6 +108,14 @@ public class IndexActivity extends AppCompatActivity {
         return true;
     }
 
+    private void resetArticleList() {
+        if (articleAdapter.getItemCount() > 0) {
+            scrollListener.resetState();
+            articleAdapter.clear();
+            request.setPage(0);
+        }
+    }
+
     private void searchArticles(SearchRequest searchRequest) {
         ApiClient client = ApiClient.getInstance();
         Call<ArticleSearchResponse> response = client.searchArticles(searchRequest);
@@ -89,7 +124,10 @@ public class IndexActivity extends AppCompatActivity {
             public void onResponse(Call<ArticleSearchResponse> call, Response<ArticleSearchResponse> response) {
                 if (response.body() != null && response.body().getResponse() != null) {
                     List<Article> articles = response.body().getResponse().getArticles();
-                    articleAdapter.setArticles(articles);
+                    articleAdapter.addArticles(articles);
+                    if (articleAdapter.getItemCount() == 0) {
+                        Snackbar.make(rvArticles, R.string.no_result, Snackbar.LENGTH_LONG).show();
+                    }
                 }
             }
 
@@ -105,7 +143,7 @@ public class IndexActivity extends AppCompatActivity {
                 .layout(R.layout.article_filter)
                 .when((Pop.Yah) (dialog, view) -> saveFilterData(view))
                 .when((Pop.Nah) (dialog, view) -> dialog.dismiss())
-                .show(this::buildFiledView);
+                .show(this::buildFilterView);
     }
 
     private void saveFilterData(View view) {
@@ -121,10 +159,11 @@ public class IndexActivity extends AppCompatActivity {
         request.addNewDesk(cbArts.isChecked() ? "Arts" : null);
         request.addNewDesk(cbSports.isChecked() ? "Sports" : null);
         request.addNewDesk(cbFashionType.isChecked() ? "Fashion & Style" : null);
+        resetArticleList();
         searchArticles(request);
     }
 
-    private void buildFiledView(View view) {
+    private void buildFilterView(View view) {
         final TextView tvBeginDate = view.findViewById(R.id.tvBeginDate);
         final DateListener listener = calendar -> tvBeginDate.setText(DF.format(calendar.getTime()));
         tvBeginDate.setOnClickListener(view1 -> {
@@ -137,6 +176,13 @@ public class IndexActivity extends AppCompatActivity {
 
     public interface DateListener {
         void beginDate(Calendar calendar);
+    }
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 }
 

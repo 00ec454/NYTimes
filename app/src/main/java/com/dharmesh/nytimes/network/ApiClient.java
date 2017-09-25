@@ -50,7 +50,12 @@ public class ApiClient {
     }
 
     public Call<ArticleSearchResponse> searchArticles(SearchRequest query) {
-        Log.i(TAG, String.format("%s,%s,%s,%s", query.getQuery(), query.getBeginDate(), query.getNewsDesksAsString(), query.getOrderBy()));
-        return service.searchArticles(query.getQuery(), query.getBeginDate(), query.getNewsDesksAsString(), query.getOrderBy(), API_KEY);
+        Log.i(TAG, String.format("%s,%s,%s,%s, %s", query.getQuery(), query.getBeginDate(), query.getNewsDesksAsString(), query.getOrderBy(), query.getPage()));
+        return service.searchArticles(query.getQuery(),
+                query.getPage(),
+                query.getBeginDate(),
+                query.getNewsDesksAsString(),
+                query.getOrderBy(),
+                API_KEY);
     }
 }

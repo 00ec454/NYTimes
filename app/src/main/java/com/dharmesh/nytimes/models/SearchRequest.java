@@ -2,22 +2,31 @@ package com.dharmesh.nytimes.models;
 
 import java.io.Serializable;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by dgohil on 9/23/17.
  */
 
 public class SearchRequest implements Serializable {
+    private static final DateFormat DF1 = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+    private static final DateFormat DF2 = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
     private String orderBy = "Newest";
     private List<String> newsDesks = new ArrayList<>();
     private String beginDate;
     private String query;
-    DateFormat DF1 = new SimpleDateFormat("MM/dd/yyyy");
-    DateFormat DF2 = new SimpleDateFormat("yyyyMMdd");
+    private int page;
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
 
     public String getOrderBy() {
         return orderBy.toLowerCase();
@@ -31,6 +40,10 @@ public class SearchRequest implements Serializable {
         return newsDesks;
     }
 
+    public void setNewsDesks(List<String> newsDesks) {
+        this.newsDesks = newsDesks;
+    }
+
     public String getNewsDesksAsString() {
         if (newsDesks.isEmpty()) {
             return null;
@@ -42,10 +55,6 @@ public class SearchRequest implements Serializable {
         return newsDeskOptions.append(")").toString();
     }
 
-    public void setNewsDesks(List<String> newsDesks) {
-        this.newsDesks = newsDesks;
-    }
-
     public void addNewDesk(String newDeskItem) {
         if (newDeskItem != null) {
             this.newsDesks.add(newDeskItem);
@@ -54,7 +63,6 @@ public class SearchRequest implements Serializable {
 
     public String getBeginDate() {
         try {
-            System.out.println("beginDate :: "+beginDate);
             return DF2.format(DF1.parse(beginDate));
         } catch (Exception e) {
             return null;

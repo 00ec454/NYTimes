@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,14 +60,21 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    public void clear() {
+        articles.clear();
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return articles.size();
     }
 
-    public void setArticles(List<Article> articles) {
-        this.articles = articles;
-        notifyDataSetChanged();
+    public void addArticles(List<Article> newArticles) {
+        Log.i(TAG, "addArticles: newArticles "+newArticles.size());
+        int currentSize = articles.size();
+        this.articles.addAll(newArticles);
+        notifyItemRangeChanged(currentSize, newArticles.size());
     }
 
     @Override

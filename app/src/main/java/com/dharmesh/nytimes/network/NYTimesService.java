@@ -18,6 +18,7 @@ public interface NYTimesService {
     @GET(SEARCH_URL)
     Call<ArticleSearchResponse> searchArticles(
             @Query("q") String query,
+            @Query("page") int page,
             @Query("begin_date") String beginDate,
             @Query("fq") String fq,
             @Query("sort") String sortType,
