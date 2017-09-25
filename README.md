@@ -42,6 +42,8 @@ The following **additional** features are implemented:
 
 * [X] List anything else that you can get done to improve the app functionality!
   * [X] Used Java 8 Lamba
+  * [X] Added Network check and popup if no network
+  * [X] Added Snakebar if no record found
   * [X] Used [Pop](https://github.com/00ec454/pop) library for popup
   
 
