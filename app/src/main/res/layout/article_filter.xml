@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/tvBeginDate"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:drawablePadding="8dp"
+        android:paddingTop="4dp"
+        android:layout_marginTop="32dp"
+        android:drawableLeft="@drawable/calendar_range"
+        android:drawableStart="@drawable/calendar_range"
+        android:drawableTint="@color/colorAccent"
+        android:ems="10"
+        android:hint="@string/begin_date"
+        android:maxLength="10" />
+
+    <TextView
+        android:id="@+id/tvSortTypeHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tvBeginDate"
+        android:layout_alignStart="@+id/tvBeginDate"
+        android:layout_below="@+id/tvBeginDate"
+        android:layout_marginTop="32dp"
+        android:drawableLeft="@drawable/sort_variant"
+        android:drawablePadding="8dp"
+        android:drawableStart="@drawable/sort_variant"
+        android:drawableTint="@color/colorAccent"
+        android:text="@string/sort_by"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/colorAccent"
+        android:textStyle="bold" />
+
+    <Spinner
+        android:id="@+id/spSortType"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tvSortTypeHeading"
+        android:layout_alignStart="@+id/tvSortTypeHeading"
+        android:layout_below="@+id/tvSortTypeHeading"
+        android:layout_marginTop="16dp"
+        android:entries="@array/sort_type"
+        tools:text="Sort Type" />
+
+
+    <TextView
+        android:id="@+id/tvNewDeskHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/spSortType"
+        android:layout_alignStart="@+id/spSortType"
+        android:layout_below="@+id/spSortType"
+        android:layout_marginTop="32dp"
+        android:drawableLeft="@drawable/tag_multiple"
+        android:drawablePadding="8dp"
+        android:drawableStart="@drawable/tag_multiple"
+        android:drawableTint="@color/colorAccent"
+        android:text="@string/new_desk"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/colorAccent"
+        android:textStyle="bold" />
+
+    <CheckBox
+        android:id="@+id/cbArts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tvNewDeskHeading"
+        android:layout_alignStart="@+id/tvNewDeskHeading"
+        android:layout_below="@+id/tvNewDeskHeading"
+        android:layout_marginTop="16dp"
+        android:text="@string/arts"
+        tools:text="@string/arts" />
+
+    <CheckBox
+        android:id="@+id/cbFashionType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/cbArts"
+        android:layout_alignStart="@+id/cbArts"
+        android:layout_below="@+id/cbArts"
+        android:layout_marginTop="16dp"
+        android:text="@string/fashion_style" />
+
+    <CheckBox
+        android:id="@+id/cbSports"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/cbFashionType"
+        android:layout_alignStart="@+id/cbFashionType"
+        android:layout_below="@+id/cbFashionType"
+        android:layout_marginTop="16dp"
+        android:text="@string/sports" />
+
+</RelativeLayout>
